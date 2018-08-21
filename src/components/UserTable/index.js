@@ -53,8 +53,8 @@ class UserTable extends Component {
     filterInputChange = (e, string = '') => {
         const filterText = string.length > 0 ? string : e ? e.target.value : '';
         let newUserArray;
+        this.setState({ filterText: filterText });
         if (filterText.length > 0) {
-            this.setState({ filterText: filterText });
             if (this.state.value === 'name') {
                 newUserArray = this.state.users.filter(function (user) {
                     return user.first_name.startsWith(filterText);
