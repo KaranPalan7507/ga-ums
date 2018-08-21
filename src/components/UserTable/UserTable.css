@@ -4,3 +4,11 @@
 .green-font{
     color:green;
 }
+.filter{
+    margin: 24px;
+}
+.radio-group{
+    flex-direction: row !important;
+    width: auto;
+    justify-content: center;
+}

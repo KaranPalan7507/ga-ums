@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import User from './../../containers/Users';
 import UserPopUp from './../UserPopUp';
-import Intro from './../Intro';
 import Button from '@material-ui/core/Button';
 
 class UserListing extends Component {
@@ -21,9 +20,9 @@ class UserListing extends Component {
         this.popUp.current.handleClickOpen();
     }
 
-    showEditUserPopUp(index) {
-        this.editUserIndex = index;
-        this.showUserPopUp();
+    showEditUserPopUp(user) {
+        this.editUserIndex = this.userList.current.state.users.indexOf(user);
+        this.popUp.current.handleEditPopupOpen(user);
     }
 
     addUser(user) {
@@ -42,7 +41,6 @@ class UserListing extends Component {
                 <Button variant="contained" color="primary" onClick={this.showAddUserPopUp.bind(this)}>
                     Add User
                 </ Button>
-                <Intro message="List of users" />
 
                 <User
                     handleEditPopupOpen={this.showEditUserPopUp.bind(this)}
