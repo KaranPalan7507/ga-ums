@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
+import Main from './../Main';
 import './App.css';
-import UserListing from './../UserListing';
 import 'whatwg-fetch';
 
 
@@ -12,7 +12,7 @@ class App extends Component {
         <header className="App-header">
           <h1 className="App-title">Users Management System</h1>
         </header>
-        <UserListing />
+        <Main />
       </div>
     );
   }

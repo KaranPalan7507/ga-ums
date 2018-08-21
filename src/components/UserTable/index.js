@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import Button from '@material-ui/core/Button';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
 import IconButton from '@material-ui/core/IconButton';
 import DeleteIcon from '@material-ui/icons/Delete';
 import EditIcon from '@material-ui/icons/Edit';
+import { Link } from 'react-router-dom';
 import './UserTable.css';
+import TextField from '@material-ui/core/TextField';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormControl from '@material-ui/core/FormControl';
+import FormLabel from '@material-ui/core/FormLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 
 class UserTable extends Component {
     constructor(props) {
@@ -14,7 +18,10 @@ class UserTable extends Component {
 
         this.state = {
             disabled: true,
-            users: []
+            users: [],
+            value: 'name',
+            filteredUserArr: [],
+            filterText: ''
         };
     }
 
@@ -26,7 +33,8 @@ class UserTable extends Component {
     }
 
     componentWillReceiveProps(props) {
-        this.setState({ users: props.list })
+        this.setState({ users: props.list });
+        this.setState({ filteredUserArr: props.list }, this.filterInputChange.bind(this, null, this.state.filterText));
     }
 
     getAge(dob_ms) {
@@ -35,9 +43,57 @@ class UserTable extends Component {
         return Math.abs(ageDate.getUTCFullYear() - 1970) + ' years';
     }
 
+    filterByChange = event => {
+        this.setState({ value: event.target.value }, this.filterInputChange.bind(this, null, this.state.filterText));
+    };
+
+    filterInputChange = (e, string = '') => {
+        const filterText = string.length > 0 ? string : e ? e.target.value : '';
+        let newUserArray;
+        if (filterText.length > 0) {
+            this.setState({ filterText: filterText });
+            if (this.state.value === 'name') {
+                newUserArray = this.state.users.filter(function (user) {
+                    return user.first_name.startsWith(filterText);
+                });
+            } else {
+                newUserArray = this.state.users.filter(function (user) {
+                    return user.email.startsWith(filterText);
+                });
+            }
+        } else {
+            newUserArray = this.state.users;
+        }
+        this.setState({ filteredUserArr: newUserArray });
+
+    }
+
+    handleDeleteUser(user) {
+        this.props.deleteUser(user);
+    }
+
     render() {
         return (
             <div>
+                <FormControl component="fieldset">
+                    <FormLabel component="legend">Filter By</FormLabel>
+                    <RadioGroup
+                        aria-label="filter By"
+                        name="filter"
+                        value={this.state.value}
+                        onChange={this.filterByChange}
+                    >
+                        <FormControlLabel value="name" control={<Radio />} label="Name" />
+                        <FormControlLabel value="email" control={<Radio />} label="Email" />
+                        <TextField
+                            margin="dense"
+                            id="first_name"
+                            label="filter"
+                            type="text"
+                            fullWidth
+                            onChange={(event) => this.filterInputChange(event)} />
+                    </RadioGroup>
+                </FormControl>
                 <table>
                     <thead>
                         <tr>
@@ -51,9 +107,12 @@ class UserTable extends Component {
                         </tr>
                     </thead>
                     <tbody>
-                        {this.state.users.map((user, index) => (
+                        {this.state.filteredUserArr.map((user, index) => (
                             <tr key={index}>
-                                <td ><a href="#">{user.first_name + ' ' + user.last_name}</a></td>
+                                <td >
+                                    <Link to={`/user/${user.email}`}>
+                                        {user.first_name + ' ' + user.last_name}
+                                    </Link></td>
                                 <td >{new Date(user.dob).toLocaleDateString()}</td>
                                 <td >{this.getAge(user.dob)}</td>
                                 <td >{user.email}</td>
@@ -61,7 +120,10 @@ class UserTable extends Component {
                                 {user.active && <td className="green-font"> Active </td>}
                                 {!user.active && <td className="red-font"> Inactive</td>}
                                 <td >
-                                    <IconButton aria-label="Delete User" color="primary" onClick={this.props.deleteUser.bind(this, index)}>
+                                    <IconButton
+                                        aria-label="Delete User"
+                                        color="primary"
+                                        onClick={this.handleDeleteUser.bind(this, user)}>
                                         <DeleteIcon />
                                     </IconButton>
                                 </td>
@@ -70,13 +132,15 @@ class UserTable extends Component {
                                         <EditIcon />
                                     </IconButton>
                                 </td>
-                                {user.active && <td>
-                                    <Button variant="outlined" color="primary" onClick={this.props.toggleState.bind(this, index)}>
-                                        Deactivate
+                                {
+                                    user.active && <td>
+                                        <Button variant="outlined" color="primary" onClick={this.props.toggleState.bind(this, user)}>
+                                            Deactivate
                                 </Button>
-                                </td>}
+                                    </td>
+                                }
                                 {!user.active && <td>
-                                    <Button variant="outlined" color="primary" onClick={this.props.toggleState.bind(this, index)}>
+                                    <Button variant="outlined" color="primary" onClick={this.props.toggleState.bind(this, user)}>
                                         Activate
                                 </Button>
                                 </td>}
@@ -84,7 +148,7 @@ class UserTable extends Component {
                         ))}
                     </tbody>
                 </table >
-            </div>
+            </div >
         );
 
     }

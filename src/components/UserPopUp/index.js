@@ -28,8 +28,8 @@ class UserPopUp extends Component {
         };
     }
 
-    handleValidation(field_name) {
-        switch (field_name) {
+    handleValidation(fieldName) {
+        switch (fieldName) {
             case 'first_name':
                 if (this.first_name === '') {
                     this.fn_error = true;
@@ -74,8 +74,8 @@ class UserPopUp extends Component {
         }
     }
 
-    onChange(event, field_name) {
-        switch (field_name) {
+    onChange(event, fieldName) {
+        switch (fieldName) {
             case 'first_name':
                 this.first_name = event.target.value;
                 break;
