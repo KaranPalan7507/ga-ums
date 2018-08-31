@@ -1,7 +1,4 @@
 # ga-ums
-GreyAtom
-
-Front-End Developer Task
 
 User Mangement System
 
